@@ -198,9 +198,8 @@ Isolation Forest as a classifier: 32% accuracy. Isolation Forest as a data quali
 ---
 
 **Requirements:**
-```
+
 gradio · pandas · numpy · plotly · scikit-learn · xgboost · joblib
-```
 
  **Live Demo:** [huggingface.co/spaces/sarikasingh02z/QualiEval](https://huggingface.co/spaces/sarikasingh02z/QualiEval)
  *Free tier — if sleeping, click Restart and wait 2–3 minutes*
