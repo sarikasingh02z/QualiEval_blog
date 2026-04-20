@@ -7,11 +7,11 @@ If you've ever trained a model that performed beautifully in the notebook but be
 
 You probably shouldn't have.
 
-Most ML failures aren't architecture failures. They're **data failures** — and they're quiet. No error messages. No obvious crash. Just a model that slowly becomes less reliable while you keep wondering why.
+Most ML failures aren't architecture failures. They're **data failures**  and they're quiet. No error messages. No obvious crash. Just a model that slowly becomes less reliable while you keep wondering why.
 
 This project started with one question I couldn't get a straight answer to:
 
-> *What actually happens to an ML model when your data is bad? Not theoretically — actually.*
+> *What actually happens to an ML model when your data is bad? Not theoretically actually.*
 
 So I built QualiEval to find out.
 
@@ -19,24 +19,24 @@ So I built QualiEval to find out.
 
 ## The Core Problem: Textbooks Don't Show You the Numbers
 
-Every ML course covers data quality. Missing values, class imbalance, label noise — the theory is well documented.
+Every ML course covers data quality. Missing values, class imbalance, label noise the theory is well documented.
 
 What's rarely shown is the **measurable impact**. How much does 15% missing data actually hurt? How does a model degrade under label noise versus outliers? Which algorithms survive bad data and which ones collapse?
 
-These aren't rhetorical questions. In real-world datasets — network traffic, fraud detection, medical records — data quality issues are the norm, not the exception. And the gap between a clean training set and messy production data is where most models silently fail.
+These aren't rhetorical questions. In real-world datasets network traffic, fraud detection, medical records — data quality issues are the norm, not the exception. And the gap between a clean training set and messy production data is where most models silently fail.
 
 ---
 
 ## The Dataset
 
-I used **UNSW-NB15** — a network intrusion detection dataset.
+I used **UNSW-NB15** a network intrusion detection dataset.
 
 - **247,872 total samples** across train and test sets
 - **49 network traffic features**
 - **Binary target:** Normal (0) vs Attack (1)
-- **Inherent class imbalance** — making it a realistic, production-like dataset
+- **Inherent class imbalance** making it a realistic, production-like dataset
 
-This wasn't chosen for convenience. Imbalanced, real-world datasets are exactly where data quality problems hit hardest — and where default ML practices fail first.
+This wasn't chosen for convenience. Imbalanced, real-world datasets are exactly where data quality problems hit hardest and where default ML practices fail first.
 
 ---
 
@@ -68,7 +68,7 @@ I treated all three models as competitors in the same task — attack classifica
 
 It wasn't weak. **I was asking it to do the wrong job.**
 
-Isolation Forest is unsupervised — it requires no labels. It identifies statistical outliers: data points that look anomalous compared to the majority. Asking it to classify attacks is like asking a quality control inspector to run the assembly line. Related roles, fundamentally different jobs.
+Isolation Forest is unsupervised it requires no labels. It identifies statistical outliers: data points that look anomalous compared to the majority. Asking it to classify attacks is like asking a quality control inspector to run the assembly line. Related roles, fundamentally different jobs.
 
 Once I understood this, the architecture became clear:
 
@@ -106,15 +106,15 @@ Before training, I ran a hybrid feature selection process combining three method
 
 Features that appeared across multiple methods scored higher votes and made the final cut.
 
-**Result: 42 features → 18 features** with no F1 loss — slight cross-validation improvement.
+**Result: 42 features → 18 features** with no F1 loss slight cross-validation improvement.
 
-One critical catch during this stage: I had engineered a feature called `byte_ratio` (sbytes / dbytes) that was highly correlated with the target. This is **data leakage** — the model would learn from it during training but the feature wouldn't exist reliably in production. It was dropped *before* feature selection, not after. The ordering matters.
+One critical catch during this stage: I had engineered a feature called `byte_ratio` (sbytes / dbytes) that was highly correlated with the target. This is **data leakage** the model would learn from it during training but the feature wouldn't exist reliably in production. It was dropped *before* feature selection, not after. The ordering matters.
 
 ---
 
 ## The Results: Clean vs Faulty
 
-After SMOTE balancing, preprocessing, and threshold tuning on the validation set — here's what the models achieved on **175,341 held-out test samples:**
+After SMOTE balancing, preprocessing, and threshold tuning on the validation set here's what the models achieved on **175,341 held-out test samples:**
 
 **Clean Data Performance:**
 
@@ -134,7 +134,7 @@ After SMOTE balancing, preprocessing, and threshold tuning on the validation set
 | Random Forest | 94.86% | ~91.8% | ~3% |
 | XGBoost | 94.09% | ~92.5% | ~3% |
 
-A 3% drop sounds small. In a system processing millions of network packets, it translates to thousands of missed detections — with no warning that performance has degraded.
+A 3% drop sounds small. In a system processing millions of network packets, it translates to thousands of missed detections with no warning that performance has degraded.
 
 **That's the core finding: bad data doesn't cause loud failures. It causes quiet ones.**
 
@@ -154,19 +154,19 @@ I tuned the decision threshold on the validation set across 50 values and found 
 
 Same model. Same weights. Three completely different operational profiles.
 
-Choosing a threshold isn't a technical decision — **it's a business decision.** It depends entirely on whether a missed attack or a false alarm is more costly in your specific context.
+Choosing a threshold isn't a technical decision **it's a business decision.** It depends entirely on whether a missed attack or a false alarm is more costly in your specific context.
 
 ---
 
 ## The Framework: QualiEval
 
-After validating these findings experimentally, I built QualiEval — a 6-tab Gradio app that applies this pipeline to any uploaded dataset.
+After validating these findings experimentally, I built QualiEval a 6-tab Gradio app that applies this pipeline to any uploaded dataset.
 
 **Tab 1 — Upload & Inspect**
 Detects missing values, class imbalance, data leakage, and outliers the moment a CSV is uploaded. Severity-rated results, not just counts.
 
 **Tab 2 — Model Risk Assessment**
-Scores Logistic Regression, Random Forest, and XGBoost (0–100) based on the specific issues found in your data — not generic recommendations.
+Scores Logistic Regression, Random Forest, and XGBoost (0–100) based on the specific issues found in your data not generic recommendations.
 
 **Tab 3 — Model Explanation**
 Explains why each model succeeds or fails given your dataset's actual issues. Tailored to what the inspection found.
@@ -187,10 +187,10 @@ Robustness scores and threshold sensitivity analysis across all three deployment
 Three principles that came out of this project that I think apply broadly:
 
 **1. Data quality is a measurable variable, not a vague concept.**
-The 3% degradation under fault injection isn't an estimate — it's a measured result from controlled experiments on the same models, same test set, same evaluation criteria. Data quality can be quantified.
+The 3% degradation under fault injection isn't an estimate it's a measured result from controlled experiments on the same models, same test set, same evaluation criteria. Data quality can be quantified.
 
 **2. Model choice matters less than data preparation.**
-XGBoost and Random Forest both degraded by approximately the same amount under faulty data. The architecture wasn't the differentiator — the data pipeline was.
+XGBoost and Random Forest both degraded by approximately the same amount under faulty data. The architecture wasn't the differentiator the data pipeline was.
 
 **3. Every tool has a specific job.**
 Isolation Forest as a classifier: 32% accuracy. Isolation Forest as a data quality auditor: meaningful anomaly rate signals that validated the entire experiment. Right tool, right role.
@@ -223,7 +223,7 @@ These are open problems worth exploring.
 
 ## Final Thought
 
-We spend a lot of time optimizing models. Loss functions, architectures, hyperparameters — the model gets most of the attention.
+We spend a lot of time optimizing models. Loss functions, architectures, hyperparameters the model gets most of the attention.
 
 But in real deployments, the data pipeline is where things go wrong. Not dramatically. Quietly.
 
